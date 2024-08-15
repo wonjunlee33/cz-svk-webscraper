@@ -76,7 +76,7 @@ def find_correct_data_from_soup(soup: BeautifulSoup, item: str) -> BeautifulSoup
 
 # first pass
 for item in item_csv:
-    print(f'running: {item} ({counter}/{count})')
+    print(f'[ALZA] running: {item} ({counter}/{count})')
     # set url
     url = base_url + item
 
@@ -128,7 +128,7 @@ counter = 1
 # rerun all broken instances until none are left
 while len(rerun) > 0:
     item = rerun.pop(0)
-    print(f're-running: {item} ({counter}/{count})')
+    print(f'[ALZA] re-running: {item} ({counter}/{count})')
     url = base_url + item
     try: 
         response = requests.get(url, headers=hdr)
@@ -155,5 +155,5 @@ while len(rerun) > 0:
     count = len(rerun)
     
 # finally, print df and also store as excel
-print(df)
+# print(df)
 df.to_excel('alza.xlsx', index=False)

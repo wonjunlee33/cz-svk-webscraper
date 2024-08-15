@@ -56,7 +56,7 @@ def find_correct_data_from_soup(soup: BeautifulSoup, item: str) -> BeautifulSoup
     return search_product
 
 for item in item_csv:
-    print(f'running: {item} ({counter}/{count})')
+    print(f'[ELECTROWORLD] running: {item} ({counter}/{count})')
     # set url
     url = base_url + item
     # here, we use playwright to get the content

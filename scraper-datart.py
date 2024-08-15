@@ -1,15 +1,16 @@
 from bs4 import BeautifulSoup
-from fake_useragent import UserAgent
 import requests
 import pandas as pd
 
-ua=UserAgent()
-hdr = {'User-Agent': ua.random,
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-      'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-      'Accept-Encoding': 'none',
-      'Accept-Language': 'en-US,en;q=0.8',
-      'Connection': 'keep-alive'}
+hdr = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.96 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept-Language': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+    'Accept-Encoding': 'none',
+    'Connection': 'keep-alive',
+    'Upgrade-Insecure-Requests': '1',
+    'TE': 'Trailers'
+}
 
 # define base url(s) 
 base_url = 'https://www.datart.cz/vyhledavani?q='
@@ -59,7 +60,7 @@ def find_correct_data_from_soup(soup: BeautifulSoup, item: str) -> BeautifulSoup
     return search_product
     
 for item in item_csv:
-    print(f'running: {item} ({counter}/{count})')
+    print(f'[DATART] running: {item} ({counter}/{count})')
     # set url
     url = base_url + item
     # acquire entire response page
