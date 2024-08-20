@@ -1,9 +1,46 @@
 #!/bin/bash
-printf "It is strongly suggested that you create a virtual environment before running this script.\n"
+# if a virtual env already exists, erase and create a new one
+if [ -d ".venv" ]; then
+    printf "Existing virtual environment found, deleting..."
+    rm -rf .venv
+    printf "done\n"
+fi
+printf "Creating new virtual environment..."
+python3 -m venv .venv
+source .venv/bin/activate
+printf "done\n"
+
 # install required packages
-pip3 install -r requirements.txt
+printf "Installing required packages..."
+pip3 install -r requirements.txt > /dev/null 2>&1
+printf "done\n"
+
+printf "Running scrapers. This will run all concurrently, please wait.\n"
+cd src
+# create a directory for the spreadsheets if it doesn't exist
+if [ ! -d "./res" ]; then
+    printf "Creating spreadsheets directory..."
+    mkdir ./res
+    printf "done\n"
+fi
 
 # run all the files concurrently
-python3 scraper-datart.py &
-python3 scraper-alza.py &
-python3 scraper-electroworld.py &
+python3 scraper-datart-cz.py &
+python3 scraper-alza-cz.py &
+python3 scraper-electroworld-cz.py &
+python3 scraper-datart-sk.py &
+python3 scraper-alza-sk.py &
+python3 scraper-nay-sk.py &
+# wait for all to finish
+wait
+
+cd ..
+printf "Done. Check src/res for the spreadsheets.\n"
+printf "Deactivating virtual environment..."
+deactivate
+printf "done\n"
+printf "Remember to move the spreadsheets out before running the script again if you want to save them.\n"
+printf "Spreadsheets will be overwritten if you run the script again.\n"
+printf "Press any key to exit..."
+read -n 1 -s
+

@@ -1,3 +1,7 @@
 *.xlsx
+.venv
 .env
 test.csv
+.DS_Store
+__pycache__
+res

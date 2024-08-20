@@ -13,8 +13,8 @@ hdr = {
 }
 
 # define base url(s) 
-base_url = 'https://www.datart.cz/vyhledavani?q='
-item_csv = open('item.csv', 'r').read()
+base_url = 'https://www.datart.sk/vyhladavanie?q='
+item_csv = open('data/item.csv', 'r').read()
 # delineate according to double commas or newlines
 item_csv = item_csv.replace('""', ',').replace('\n', ',').split(',')
 # get rid of empty strings
@@ -32,7 +32,7 @@ dtypes = {
     'promo': bool
 }
 
-# necessary to prevent type inference that bugs everything
+# necessary to prevent type inference that bugs everything 
 df = pd.DataFrame(columns=['item', 'lessOrEqual', 'actualPrice', 'url', 'cashback', 'available', 'promo']).astype(dtypes)
 counter = 1
 
@@ -45,22 +45,22 @@ def find_correct_data_from_soup(soup: BeautifulSoup, item: str) -> BeautifulSoup
     
     # check for None
     if not search_product:
-        print('No product found')
+        print('No product found (no search results)')
         return None
     
     while search_product:
         item_title = search_product.find('h3', class_='item-title').text
-        if 'Televize' in item_title and ('Samsung' in item_title or 'LG' in item_title) and item in item_title:
+        if 'Televízor' in item_title and ('Samsung' in item_title or 'LG' in item_title) and item in item_title:
             break
         search_product = search_product.find_next('div', class_='product-box')
         if not search_product:
-            print('No product found')
+            print('No product found (searched entire page)')
             return None
     
     return search_product
     
 for item in item_csv:
-    print(f'[DATART] running: {item} ({counter}/{count})')
+    print(f'[DATART-SK] running: {item} ({counter}/{count})')
     # set url
     url = base_url + item
     # acquire entire response page
@@ -107,4 +107,4 @@ for item in item_csv:
 
 # finally, print df and also store as excel
 # print(df)
-df.to_excel('datart.xlsx', index=False)
+df.to_excel('res/datart-sk.xlsx', index=False)

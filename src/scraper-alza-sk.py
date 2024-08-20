@@ -14,8 +14,8 @@ hdr = {
 }
 
 # define base url(s) 
-base_url = 'https://www.alza.cz/search.htm?exps='
-item_csv = open('alza-item.csv', 'r').read()
+base_url = 'https://www.alza.sk/search.htm?exps='
+item_csv = open('data/alza-item.csv', 'r').read()
 # delineate according to double commas or newlines
 item_csv = item_csv.replace('""', ',').replace('\n', ',').split(',')
 # get rid of empty strings
@@ -47,15 +47,14 @@ def find_correct_data_from_soup(soup: BeautifulSoup, item: str) -> BeautifulSoup
     Finds the correct data from the soup. If the item is not a TV, it will search for the next occurrence.
     '''
     # find the first item in response
-    # search_product = soup.find('div', class_='box browsingitem js-box canBuy inStockAvailability')
-    # find any divs with class name that starts with 'box browsingitem js-box canBuy inStockAvailability' but can end with anything
     search_product = soup.find(
             'div', 
-            class_=re.compile(r'(?=.*\bbox\b)(?=.*\bbrowsingitem\b)(?=.*\bjs-box\b)(?=.*\bcanBuy\b)(?=.*\binStockAvailability\b)')
+            # class_=re.compile(r'(?=.*\bbox\b)(?=.*\bbrowsingitem\b)(?=.*\bjs-box\b)(?=.*\bcanBuy\b)(?=.*\binStockAvailability\b)')
+            class_=re.compile(r'(?=.*\bbox\b)(?=.*\bbrowsingitem\b)(?=.*\bjs-box\b)')
     )
     # check for None
     if not search_product:
-        print('No product found (no search results). This product will rerun.')
+        print('No product found (no search results)')
         rerun.append(item)
         return None
     
@@ -66,7 +65,7 @@ def find_correct_data_from_soup(soup: BeautifulSoup, item: str) -> BeautifulSoup
         # match anything that has 'box browsingitem js-box canBuy inStockAvailability' in it 
         search_product = search_product.find_next(
             'div', 
-            class_=re.compile(r'(?=.*\bbox\b)(?=.*\bbrowsingitem\b)(?=.*\bjs-box\b)(?=.*\bcanBuy\b)(?=.*\binStockAvailability\b)')
+            class_=re.compile(r'(?=.*\bbox\b)(?=.*\bbrowsingitem\b)(?=.*\bjs-box\b)')
         )
         if not search_product:
             print('No product found (searched entire page)')
@@ -76,7 +75,7 @@ def find_correct_data_from_soup(soup: BeautifulSoup, item: str) -> BeautifulSoup
 
 # first pass
 for item in item_csv:
-    print(f'[ALZA] running: {item} ({counter}/{count})')
+    print(f'[ALZA-SK] running: {item} ({counter}/{count})')
     # set url
     url = base_url + item
 
@@ -88,7 +87,6 @@ for item in item_csv:
         continue
     # parse response page
     soup = BeautifulSoup(response.content, 'html.parser')
-    # print(soup.prettify())
     # find the correct data from the soup
     search_product = find_correct_data_from_soup(soup, item)
     if not search_product:
@@ -101,28 +99,17 @@ for item in item_csv:
         lessOrEqual = search_product.find('span', class_="price-box__compare-price").text
     except:
         lessOrEqual = actualPrice
-    # check for cashback
-    # try:
-    #     cashback = search_product.find('span', class_='flag flag-color-orange').text
-    # except AttributeError:
-    #     cashback = 'N/A'
     # check for availability
     is_available = search_product.find('span', class_='avlVal avl3 none') or search_product.find('span', class_='avlVal avl2 none')
+    if not is_available:
+        is_available = 'Očakávame' in search_product.find('span', class_='avlVal avl1 none').text if search_product.find('span', class_='avlVal avl1 none') else False
     available = False if is_available else True
-    # check for promo
-    # is_promo = search_product.find('div', class_='product-promo')
-    # promo = True if is_promo else False
-    # remove whitespace from actualPrice and lessOrEqual
     actualPrice = actualPrice.strip()
     lessOrEqual = lessOrEqual.strip()
-    # cashback = cashback.strip().replace('CASHBACK', '')
-    # print(f'actualPrice: {actualPrice}, lessOrEqual: {lessOrEqual}, cashback: {cashback}, available: {available}, promo: {promo}')
     print(f'actualPrice: {actualPrice}, lessOrEqual: {lessOrEqual}, available: {available}')
     # now put both into df
-    # df.loc[len(df)] = {'item': item, 'lessOrEqual': lessOrEqual, 'actualPrice': actualPrice, 'url': url, 'cashback': cashback, 'available': available, 'promo': promo}
     df.loc[len(df)] = {'item': item, 'lessOrEqual': lessOrEqual, 'actualPrice': actualPrice, 'url': url, 'available': available}
     counter += 1
     
 # finally, print df and also store as excel
-# print(df)
-df.to_excel('alza.xlsx', index=False)
+df.to_excel('res/alza-sk.xlsx', index=False)
