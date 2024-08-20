@@ -122,37 +122,6 @@ for item in item_csv:
     # df.loc[len(df)] = {'item': item, 'lessOrEqual': lessOrEqual, 'actualPrice': actualPrice, 'url': url, 'cashback': cashback, 'available': available, 'promo': promo}
     df.loc[len(df)] = {'item': item, 'lessOrEqual': lessOrEqual, 'actualPrice': actualPrice, 'url': url, 'available': available}
     counter += 1
-
-count = len(rerun)
-counter = 1
-# rerun all broken instances until none are left
-while len(rerun) > 0:
-    item = rerun.pop(0)
-    print(f'[ALZA] re-running: {item} ({counter}/{count})')
-    url = base_url + item
-    try: 
-        response = requests.get(url, headers=hdr)
-    except:
-        print('Response Error: ', item)
-        continue
-    soup = BeautifulSoup(response.content, 'html.parser')
-    search_product = find_correct_data_from_soup(soup, item)
-    if not search_product:
-        counter += 1
-        continue
-    actualPrice = search_product.find('span', class_='price-box__price').text
-    try:
-        lessOrEqual = search_product.find('span', class_="price-box__compare-price").text
-    except:
-        lessOrEqual = actualPrice
-    is_available = search_product.find('span', class_='avlVal avl3 none') or search_product.find('span', class_='avlVal avl2 none')
-    available = False if is_available else True
-    actualPrice = actualPrice.strip()
-    lessOrEqual = lessOrEqual.strip()
-    print(f'actualPrice: {actualPrice}, lessOrEqual: {lessOrEqual}, available: {available}')
-    df.loc[len(df)] = {'item': item, 'lessOrEqual': lessOrEqual, 'actualPrice': actualPrice, 'url': url, 'available': available}
-    counter += 1
-    count = len(rerun)
     
 # finally, print df and also store as excel
 # print(df)
