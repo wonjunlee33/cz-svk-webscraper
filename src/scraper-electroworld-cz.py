@@ -5,13 +5,11 @@ from Exceptions import *
 
 # define base url(s) 
 base_url = 'https://www.electroworld.cz/vysledky-vyhledavani?q='
-item_csv = open('data/alza-item.csv', 'r').read()
+item_csv = open('../data/item.csv', 'r').read()
 # delineate according to double commas or newlines
 item_csv = item_csv.replace('""', ',').replace('\n', ',').split(',')
 # get rid of empty strings
 item_csv = [item for item in item_csv if item and '.' not in item]
-# knock final 2 chars off each item
-item_csv = [item[:-2] for item in item_csv]
 # print(item_csv)
 count = len(item_csv)
 
@@ -45,7 +43,7 @@ def find_correct_data_from_soup(soup: BeautifulSoup, item: str) -> BeautifulSoup
     
     while search_product:
         item_title = search_product.find('h3', class_='product-box__name bs-m-0 font-weight-bold typo-complex-14 typo-complex-sm-16').text
-        # print(item_title)
+        item_title_list = item_title.split()
         if ('Samsung' in item_title or 'LG' in item_title) and item in item_title:
             break
         search_product = search_product.find_next('div', class_='product-box product-box--main position-relative bg-white bs-p-3 bs-p-sm-4 typo-complex-12 flex-grow-0 flex-shrink-0')
@@ -107,4 +105,4 @@ for item in item_csv:
     counter += 1
 
 # finally, print df and also store as excel
-df.to_excel('res/electroworld-cz.xlsx', index=False)
+df.to_excel('../res/electroworld-cz.xlsx', index=False)

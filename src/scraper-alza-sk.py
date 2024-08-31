@@ -15,13 +15,11 @@ hdr = {
 
 # define base url(s) 
 base_url = 'https://www.alza.sk/search.htm?exps='
-item_csv = open('data/alza-item.csv', 'r').read()
+item_csv = open('../data/item.csv', 'r').read()
 # delineate according to double commas or newlines
 item_csv = item_csv.replace('""', ',').replace('\n', ',').split(',')
 # get rid of empty strings
 item_csv = [item for item in item_csv if item and '.' not in item]
-# knock final 2 chars off each item
-item_csv = [item[:-2] for item in item_csv]
 # print(item_csv)
 count = len(item_csv)
 
@@ -112,4 +110,4 @@ for item in item_csv:
     counter += 1
     
 # finally, print df and also store as excel
-df.to_excel('res/alza-sk.xlsx', index=False)
+df.to_excel('../res/alza-sk.xlsx', index=False)

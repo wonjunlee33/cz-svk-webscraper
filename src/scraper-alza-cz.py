@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import re
 import requests
-from Exceptions import ProbablyDoesNotExistException
 
 hdr = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.96 Safari/537.36',
@@ -16,13 +15,11 @@ hdr = {
 
 # define base url(s) 
 base_url = 'https://www.alza.cz/search.htm?exps='
-item_csv = open('data/alza-item.csv', 'r').read()
+item_csv = open('../data/item.csv', 'r').read()
 # delineate according to double commas or newlines
 item_csv = item_csv.replace('""', ',').replace('\n', ',').split(',')
 # get rid of empty strings
 item_csv = [item for item in item_csv if item and '.' not in item]
-# knock final 2 chars off each item
-item_csv = [item[:-2] for item in item_csv]
 # print(item_csv)
 count = len(item_csv)
 
@@ -60,6 +57,7 @@ def find_correct_data_from_soup(soup: BeautifulSoup, item: str) -> BeautifulSoup
     
     while search_product:
         item_title = search_product.find('a', class_='name browsinglink js-box-link').text
+        item_title_list = item_title.split()
         if ('Samsung' in item_title or 'LG' in item_title) and item in item_title:
             break
 
@@ -123,7 +121,7 @@ while len(rerun) > 0:
     else: 
         die_counter = 0
     bleft = aleft
-    print(f'[ALZA-CZ] rerunning: {item} ({bleft} items left to re run)')
+    print(f'[ALZA-CZ] rerunning: {item} ({bleft} items left to rerun)')
     # set url
     url = base_url + item
 
@@ -164,4 +162,4 @@ while len(rerun) > 0:
     df.loc[len(df)] = {'item': item, 'lessOrEqual': lessOrEqual, 'actualPrice': actualPrice, 'url': url, 'available': available, 'promo': promo}
     
 # finally, print df and also store as excel
-df.to_excel('res/alza-cz.xlsx', index=False)
+df.to_excel('../res/alza-cz.xlsx', index=False)

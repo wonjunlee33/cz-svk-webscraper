@@ -5,7 +5,7 @@ from Exceptions import *
 
 # define base url(s) 
 base_url = 'https://www.nay.sk/vysledky-vyhladavanie?q='
-item_csv = open('data/item.csv', 'r').read()
+item_csv = open('../data/item.csv', 'r').read()
 # delineate according to double commas or newlines
 item_csv = item_csv.replace('""', ',').replace('\n', ',').split(',')
 # get rid of empty strings
@@ -41,7 +41,7 @@ def find_correct_data_from_soup(soup: BeautifulSoup, item: str) -> BeautifulSoup
     
     while search_product:
         item_title = search_product.find('h3', class_='product-box__name bs-m-0 font-weight-bold typo-complex-14 typo-complex-sm-16').text
-        # print(f'item_title: {item_title}')
+        item_title_list = item_title.split()
         if ('Samsung' in item_title or 'LG' in item_title) and item in item_title:
             break
         search_product = search_product.find_next('section', class_='product-box product-box--main position-relative bg-white bs-p-3 bs-p-sm-4 typo-complex-12 flex-grow-0 flex-shrink-0')
@@ -108,4 +108,4 @@ for item in item_csv:
 
 # finally, print df and also store as excel
 # print(df)
-df.to_excel('res/nay-sk.xlsx', index=False)
+df.to_excel('../res/nay-sk.xlsx', index=False)
