@@ -8,7 +8,7 @@ if [ -d ".venv" ]; then
 fi
 printf "Creating new virtual environment..."
 python3 -m venv .venv
-source .venv/bin/activate
+source .venv/Scripts/activate
 printf "done\n"
 
 # install required packages
