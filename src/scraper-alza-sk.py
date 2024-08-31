@@ -15,7 +15,7 @@ hdr = {
 
 # define base url(s) 
 base_url = 'https://www.alza.sk/search.htm?exps='
-item_csv = open('../data/item.csv', 'r').read()
+item_csv = open('../data/item.csv', 'r', encoding='utf-8').read()
 # delineate according to double commas or newlines
 item_csv = item_csv.replace('""', ',').replace('\n', ',').split(',')
 # get rid of empty strings
